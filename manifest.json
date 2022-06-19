@@ -1,0 +1,37 @@
+{
+	"name": "Youtube Video Sentiment",
+	"description": "Displays the sentiment of the video based on the ratio of likes to views. It also takes into account the age of the video and channel subscribers.",
+	"version": "1.0.0",
+	"manifest_version": 3,
+	"icons": {
+		"128": "assets/icon128.png"
+	},
+	"action": {
+		"default_popup": "popup/index.html"
+	},
+	"host_permissions": [
+		"*://*.youtube.com/*"
+	],
+	"permissions": [
+		"storage",
+		"tabs"
+	],
+	"content_scripts": [
+		{
+			"matches": [
+				"*://youtube.com/*",
+				"*://www.youtube.com/*",
+				"*://m.youtube.com/*"
+			],
+			"exclude_matches": ["*://*.music.youtube.com/*"],
+			"js": [
+				"content-script.js"
+			],
+			"run_at": "document_idle"
+		}
+	],
+	"externally_connectable": {
+    	"matches": ["*://*.youtube.com/*"]
+  	}
+	
+}
