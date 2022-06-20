@@ -57,7 +57,6 @@ function getDurationSeconds(duration) {
 
 async function getCentroids(datapoint) {
 	datapointDeepCopy = JSON.parse(JSON.stringify(datapoint));
-	
 	let centroids = await new Promise((resolve, reject) => {
 		chrome.storage.local.get('centroids', function(data) {
 			if (data.centroids) {
@@ -72,6 +71,15 @@ async function getCentroids(datapoint) {
 	if (centroids.length == 0) {
 		centroids.push(datapointDeepCopy);
 	} 
+	// set value for meanSquaredDifferenceDistance to varianceDistance * count
+	for (let i = 0; i < centroids.length; i++) {
+		let centroid = centroids[i];
+		let meanSquaredDifferenceLikesToViewsRatio = centroid.varianceLikesToViewsRatio * centroid.count;
+		let meanSquaredDifferenceDistance = centroid.varianceDistance * centroid.count;
+		centroid.meanSquaredDifferenceLikesToViewsRatio = meanSquaredDifferenceLikesToViewsRatio;
+		centroid.meanSquaredDifferenceDistance = meanSquaredDifferenceDistance;
+		// TO DELETE
+	}
 	return centroids;
 }
 
@@ -160,7 +168,7 @@ function saveCentroids(centroids) {
 			console.log("Centroids saved to chrome storage");
 		}
 	}});
-	//exportObjectToLocalFolder(centroids, "centroids") // EXPORT
+	exportObjectToLocalFolder(centroids, "centroids") // EXPORT
 }
 
 function exportObjectToLocalFolder(object, objectName) {
@@ -186,6 +194,7 @@ function calculateDistanceWeights(covarianceMatrix) {
 		distanceWeights[i] =  distanceWeights[i] / (numberOfCoordinates - 1);
 		distanceWeights[i] =  1/numberOfCoordinates + (1-distanceWeights[i])*(numberOfCoordinates-1)/numberOfCoordinates;
 	}
+	console.log("Distance weights: ", distanceWeights);
 	return distanceWeights;
 }
 
@@ -228,34 +237,29 @@ function sequentialKMeans(centroids, datapoint, covarianceMatrix) {
 
 function updateCentroid(centroid, datapoint, distance) {
 	centroid.count += 1;
+	// update centroid coordinates
 	let coordinates = centroid.coordinates;
 	let newCoordinates = [];
 	for (let i = 0; i < coordinates.length; i++) {
-		newCoordinates.push(movingAverage(coordinates[i], datapoint.coordinates[i], centroid.count));
+		let newCoordinateStats = movingAverageAndVariance(centroid.count, coordinates[i], 0, datapoint.coordinates[i]);
+		newCoordinates.push(newCoordinateStats.average);
 	}
 	centroid.coordinates = newCoordinates;
-	let averageDistance = movingAverage(centroid.averageDistance, distance, centroid.count);
-	let varianceDistance = movingVariance(centroid.varianceDistance, distance, centroid.averageDistance, averageDistance, centroid.count);
-	centroid.averageDistance = averageDistance;
-	centroid.varianceDistance = varianceDistance;
-	let averageLikesToViewsRatio = movingAverage(centroid.averageLikesToViewsRatio, datapoint.averageLikesToViewsRatio, centroid.count);
-	let varianceLikesToViewsRatio = movingVariance(centroid.varianceLikesToViewsRatio, datapoint.averageLikesToViewsRatio, centroid.averageLikesToViewsRatio, averageLikesToViewsRatio, centroid.count);
-	centroid.averageLikesToViewsRatio = averageLikesToViewsRatio;
-	centroid.varianceLikesToViewsRatio = varianceLikesToViewsRatio;
-	let averageViews = movingAverage(centroid.averageViews, datapoint.averageViews, centroid.count);
-	centroid.averageViews = averageViews;
+	// Update distance stats
+	let newDistanceStats = movingAverageAndVariance(centroid.count, centroid.averageDistance, centroids.meanSquaredDifferenceDistance, distance);
+	centroid.averageDistance = newDistanceStats.average;
+	centroid.varianceDistance = newDistanceStats.variance;
+	centroid.meanSquaredDifferenceDistance = newDistanceStats.meanSquaredDifference;
+	// update likes to views ratio stats 
+	let newLikesToViewsRatioStats = movingAverageAndVariance(centroid.count, centroid.likesToViewsRatio, centroid.meanSquaredDifferenceLikesToViewsRatio, datapoint.likesToViewsRatio);
+	centroid.averageLikesToViewsRatio = newLikesToViewsRatioStats.average;
+	centroid.varianceLikesToViewsRatio = newLikesToViewsRatioStats.variance;
+	centroid.meanSquaredDifferenceLikesToViewsRatio = newLikesToViewsRatioStats.meanSquaredDifference;
+	// update age stats
+	let newViewsStats = movingAverageAndVariance(centroid.count, centroid.averageViews, centroid.meanSquaredDifferenceViews, datapoint.views);
+	centroid.averageViews = newViewsStats.average;
 	
 	return centroid;
-}
-
-function movingAverage(oldAverage, newPoint, count) {
-	let newAverage = oldAverage + (newPoint - oldAverage) / count;
-	return newAverage;
-}
-
-function movingVariance(oldVariance, newPoint, oldAverage, newAverage, count) {
-	let newVariance = oldVariance + ((newPoint - oldAverage)*(newPoint - newAverage)-oldVariance)/count;
-	return newVariance;
 }
 
 function movingAverageAndVariance(count, average, meanSquaredDifference, newValue) {
