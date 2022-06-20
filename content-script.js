@@ -246,7 +246,7 @@ function updateCentroid(centroid, datapoint, distance) {
 	}
 	centroid.coordinates = newCoordinates;
 	// Update distance stats
-	let newDistanceStats = movingAverageAndVariance(centroid.count, centroid.averageDistance, centroids.meanSquaredDifferenceDistance, distance);
+	let newDistanceStats = movingAverageAndVariance(centroid.count, centroid.averageDistance, centroid.meanSquaredDifferenceDistance, distance);
 	centroid.averageDistance = newDistanceStats.average;
 	centroid.varianceDistance = newDistanceStats.variance;
 	centroid.meanSquaredDifferenceDistance = newDistanceStats.meanSquaredDifference;
