@@ -1,19 +1,16 @@
-const API_KEY =  getApiKey();
+let API_KEY = "";
+chrome.storage.local.get('apiKey', function(result) {
+	  API_KEY = result.apiKey;
+});
 let isMobile = location.hostname == "m.youtube.com";
 let isShorts = () => location.pathname.startsWith("/shorts");
 let isNormalVideo = () => location.pathname.startsWith("/watch");
+// debug variables print to console
+const clogCentroids = true;
+const clogDistanceWeights = true;
+const clogCoordinateStats = true;
 
 // #region get data from chrome storage
-
-async function getApiKey() {
-	let apiKey = await new Promise((resolve, reject) => {
-		chrome.storage.local.get("apiKey", function(result) {
-			resolve(result.apiKey);
-		});
-	});
-	console.log(apiKey);
-	return apiKey;
-}
 
 async function getCentroids(datapoint) {
 	datapointDeepCopy = JSON.parse(JSON.stringify(datapoint));
@@ -216,7 +213,9 @@ function calculateDistanceWeights(covarianceMatrix) {
 		distanceWeights[i] =  distanceWeights[i] / (numberOfCoordinates - 1);
 		distanceWeights[i] =  1/numberOfCoordinates + (1-distanceWeights[i])*(numberOfCoordinates-1)/numberOfCoordinates;
 	}
-	console.log("Distance weights: ", distanceWeights);
+	if (clogDistanceWeights) {
+		console.log("Distance weights: ", distanceWeights);
+	}
 	return distanceWeights;
 }
 
@@ -448,6 +447,13 @@ async function main(videoId, isThumbnail=false) {
 	let centroid = sequentialKMeans(centroids, datapoint, coordinatesStats.correlationMatrix);
 	let videoScore = calculateScore(centroid, datapoint);
 
+	if (clogCentroids) {
+		console.log(centroids);
+	}
+	if (clogCoordinateStats) {
+		console.log(coordinatesStats);
+	}
+
 	if (!isThumbnail) {
 		let liksEl = document.querySelector("ytd-menu-renderer yt-formatted-string[aria-label]");
 		let span = liksEl.querySelector('span');
@@ -467,14 +473,11 @@ function getVideoId() {
   const urlObject = new URL(window.location.href);
   const pathname = urlObject.pathname;
   if (pathname.startsWith("/clip")) {
-	console.log(document.querySelector("meta[itemprop='videoId']").content);
     return document.querySelector("meta[itemprop='videoId']").content;
   } else {
     if (pathname.startsWith("/shorts")) {
-		console.log(pathname.slice(8));
       return pathname.slice(8);
     }
-	console.log(urlObject.searchParams.get("v"));
     return urlObject.searchParams.get("v");
   }
 }
