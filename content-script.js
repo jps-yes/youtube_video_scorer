@@ -5,13 +5,13 @@ chrome.storage.local.get('apiKey', function(result) {
 let isMobile = location.hostname == "m.youtube.com";
 let isShorts = () => location.pathname.startsWith("/shorts");
 let isNormalVideo = () => location.pathname.startsWith("/watch");
+
 // debug variables print to console
 const clogCentroids = true;
 const clogDistanceWeights = true;
 const clogCoordinateStats = true;
 
 // #region get data from chrome storage
-
 async function getCentroids(datapoint) {
 	datapointDeepCopy = JSON.parse(JSON.stringify(datapoint));
 	let centroids = await new Promise((resolve, reject) => {
@@ -272,18 +272,18 @@ function updateCentroid(centroid, datapoint, distance) {
 	centroid.varianceDistance = newDistanceStats.variance;
 	centroid.meanSquaredDifferenceDistance = newDistanceStats.meanSquaredDifference;
 	// update likes to views ratio stats 
-	let newLikesToViewsRatioStats = movingAverageAndVariance(centroid.count, centroid.likesToViewsRatio, centroid.meanSquaredDifferenceLikesToViewsRatio, datapoint.likesToViewsRatio);
+	let newLikesToViewsRatioStats = movingAverageAndVariance(centroid.count, centroid.averageLikesToViewsRatio, centroid.meanSquaredDifferenceLikesToViewsRatio, datapoint.averageLikesToViewsRatio);
 	centroid.averageLikesToViewsRatio = newLikesToViewsRatioStats.average;
 	centroid.varianceLikesToViewsRatio = newLikesToViewsRatioStats.variance;
 	centroid.meanSquaredDifferenceLikesToViewsRatio = newLikesToViewsRatioStats.meanSquaredDifference;
 	// update age stats
-	let newViewsStats = movingAverageAndVariance(centroid.count, centroid.averageViews, centroid.meanSquaredDifferenceViews, datapoint.views);
+	let newViewsStats = movingAverageAndVariance(centroid.count, centroid.averageViews, 0, datapoint.averageViews);
 	centroid.averageViews = newViewsStats.average;
 	return centroid;
 }
 
 function movingAverageAndVariance(count, average, meanSquaredDifference, newValue) {
-	let stats = {
+	stats = {
 		"average": average,
 		"meanSquaredDifference": meanSquaredDifference,
 		"variance": 0
@@ -444,14 +444,17 @@ async function main(videoId, isThumbnail=false) {
 	coordinatesStats = updateAndSaveCoordinateStats(coordinatesStats, datapoint, normalizedCoordinates);	
 	datapoint.coordinates = normalizedCoordinates;
 	let centroids = await getCentroids(datapoint);
+	if (clogCentroids) {
+		console.log("centroids", centroids);
+	}
 	let centroid = sequentialKMeans(centroids, datapoint, coordinatesStats.correlationMatrix);
 	let videoScore = calculateScore(centroid, datapoint);
 
 	if (clogCentroids) {
-		console.log(centroids);
+		console.log("centroids", centroids);
 	}
 	if (clogCoordinateStats) {
-		console.log(coordinatesStats);
+		console.log("coordinatesStats", coordinatesStats);
 	}
 
 	if (!isThumbnail) {
