@@ -159,7 +159,7 @@ function saveCentroids(centroids) {
 			console.log("Centroids saved to chrome storage");
 		}
 	}});
-	exportObjectToLocalFolder(centroids, "centroids") // EXPORT
+	//exportObjectToLocalFolder(centroids, "centroids") // EXPORT
 }
 
 function exportObjectToLocalFolder(object, objectName) {
