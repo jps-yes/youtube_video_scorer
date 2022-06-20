@@ -7,10 +7,11 @@ let isNormalVideo = () => location.pathname.startsWith("/watch");
 
 async function getApiKey() {
 	let apiKey = await new Promise((resolve, reject) => {
-		chrome.storage.sync.get("apiKey", function(result) {
+		chrome.storage.local.get("apiKey", function(result) {
 			resolve(result.apiKey);
 		});
 	});
+	console.log(apiKey);
 	return apiKey;
 }
 
