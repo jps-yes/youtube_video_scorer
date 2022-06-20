@@ -1,4 +1,4 @@
-const API_KEY = await getApiKey();
+const API_KEY =  getApiKey();
 let isMobile = location.hostname == "m.youtube.com";
 let isShorts = () => location.pathname.startsWith("/shorts");
 let isNormalVideo = () => location.pathname.startsWith("/watch");
