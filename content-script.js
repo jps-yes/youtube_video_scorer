@@ -185,6 +185,9 @@ function saveCentroids(centroids) {
 	centroids = removeObsoleteCentroids(centroids);	
 	// save centroids to chrome storage
 	chrome.storage.local.set({'centroids':  centroids, function() {
+		if (clogCentroids) {
+			clog("centroids", centroids);
+		}
 		if (chrome.runtime.lastError) {
 			let smallestCountAgeRatio = Math.min(...centroids.map(centroid => centroid.countAgeRatio));
 			let smallestCountAgeRatioIndex = centroids.findIndex(centroid => centroid.countAgeRatio == smallestCountAgeRatio);
@@ -416,6 +419,9 @@ function updateAndSaveCoordinateStats(coordinatesStats, datapoint, normalizedCoo
 	}
 	coordinatesStats.count++;
 	chrome.storage.local.set({coordinatesStats: coordinatesStats});
+	if (clogCoordinateStats) {
+		clog("coordinatesStats", coordinatesStats);
+	}
 	//exportObjectToLocalFolder(coordinatesStats, "coordinatesStats"); // EXPORT TO LOCAL FOLDER
 	return coordinatesStats;
 }
@@ -467,19 +473,9 @@ async function main(videoId, isThumbnail=false) {
 	coordinatesStats = updateAndSaveCoordinateStats(coordinatesStats, datapoint, normalizedCoordinates);	
 	datapoint.coordinates = normalizedCoordinates;
 	let centroids = await getCentroids(datapoint);
-	if (clogCentroids) {
-		clog("centroids", centroids);
-	}
 	let centroid = sequentialKMeans(centroids, datapoint, coordinatesStats.correlationMatrix);
 	let videoScore = calculateScore(centroid, datapoint);
-
-	if (clogCentroids) {
-		clog("centroids", centroids);
-	}
-	if (clogCoordinateStats) {
-		clog("coordinatesStats", coordinatesStats);
-	}
-
+	
 	if (!isThumbnail) {
 		let liksEl = document.querySelector("ytd-menu-renderer yt-formatted-string[aria-label]");
 		let span = liksEl.querySelector('span');
