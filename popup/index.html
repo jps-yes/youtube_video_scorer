@@ -1,39 +1,42 @@
-
-<!-- HTML for the popup of the chrome extension
-    Create a button that runs the function getThumbnailScores present in the content-script.js file
-    -->
 <html>
 <head>
-    <title>Thumbnail Scores</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <title>Youtube Video Score</title>
+    <style>
+        :root {
+            --ydark: rgb(40, 40, 40);
+            --yred: rgb(255, 0, 0);
+            --ywhite: rgb(255, 255, 255);
+        }
+        body {
+            background-color: var(--ydark); 
+            width: 300px;
+            font-family: 'Roboto', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--ywhite);
+        }
+        input {
+            background: var(--ydark);
+            color: var(--ywhite);
+            border-color: var(--ywhite);
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 0px;
+        }
+    </style>
 </head>
 <body>
-    <!-- HTML for the popup of the chrome extension
-    Create a button that runs the function getThumbnailScores present in the content-script.js file
-    -->
-    <div class="container">
-        <div class="row">           
-            <h1>API KEY</h1>
-        </div>
-        <div class="row">           
-            <input id="name_textbox" />                   
-            <button id="ok_btn" type="button">OK</button>
-        </div>      
-        <div class="row">
-            <div class="col-md-12">
-                <h1>Thumbnail Scores</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <button id="GetScoresButton" class="btn btn-primary">Get Thumbnail Scores</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="thumbnail-scores"></div>
-            </div>
-        </div>
+    <h1>YouTube Video Scorer</h1>
+    <div class="row">           
+        <input placeholder="Insert API key" id="api_input"/>                   
+        <button id="api_submit" type="button">Submit</button>
+    <div>      
+    <h2>Thumbnail Scores</h2>
+    <div class="row">
+        <button id="GetScoresButton" class="btn btn-primary">Get Thumbnail Scores</button>
+    </div>
+    <div class="row">
+        <div id="thumbnail-scores"></div>
     </div>
 </body>
 

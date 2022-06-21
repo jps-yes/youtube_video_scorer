@@ -9,22 +9,19 @@ function gotTab(tab) {
 }
 
 // section 2 -------
-document.addEventListener('DOMContentLoaded', documentEvents  , false);
-function myAction(input) { 
-    console.log("input value is : " + input.value);
-    chrome.storage.local.set({'apiKey': input.value});
+function saveApiKey() { 
+    let input = document.getElementById('api_input').value;
+    chrome.storage.local.set({"apiKey": input});
 }
 
-function documentEvents() {    
-  document.getElementById('ok_btn').addEventListener('click', 
-    function() { myAction(document.getElementById('name_textbox'));
-  });
-
-}
+let apiButton = document.getElementById("api_submit");
+apiButton.addEventListener("click", function() {
+    saveApiKey();
+});
 
 chrome.storage.local.get('apiKey', function(result) {
     if (result.apiKey) {
-        document.getElementById('name_textbox').value = result.apiKey;
+        document.getElementById('api_input').value = result.apiKey;
     }
 }
 );
