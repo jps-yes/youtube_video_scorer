@@ -4,7 +4,8 @@
 	"version": "1.0.0",
 	"manifest_version": 3,
 	"icons": {
-		"128": "assets/icon128.png"
+		"128": "assets/icon128.ico",
+		"512": "assets/icon512.ico"
 	},
 	"action": {
 		"default_popup": "popup/index.html"

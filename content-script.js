@@ -8,8 +8,8 @@ let isNormalVideo = () => location.pathname.startsWith("/watch");
 
 // debug variables print to console
 const clogCentroids = true;
-const clogDistanceWeights = false;
-const clogCoordinateStats = false;
+const clogDistanceWeights = true;
+const clogCoordinateStats = true;
 const clogCorruptedCentroids = false;
 const clogObsoleteCentroids = false;
 const clogClusteringInfo = true;
@@ -183,11 +183,11 @@ function saveCentroids(centroids) {
 		centroid.countAgeRatio = centroid.count / centroid.age;
 	});
 	centroids = removeObsoleteCentroids(centroids);	
+	if (clogCentroids) {
+		clog("centroids", centroids);
+	}
 	// save centroids to chrome storage
 	chrome.storage.local.set({'centroids':  centroids, function() {
-		if (clogCentroids) {
-			clog("centroids", centroids);
-		}
 		if (chrome.runtime.lastError) {
 			let smallestCountAgeRatio = Math.min(...centroids.map(centroid => centroid.countAgeRatio));
 			let smallestCountAgeRatioIndex = centroids.findIndex(centroid => centroid.countAgeRatio == smallestCountAgeRatio);
@@ -225,12 +225,15 @@ function calculateDistanceWeights(covarianceMatrix) {
 	let distanceWeights = Array(covarianceMatrix.length).fill(0);
 	let numberOfCoordinates = covarianceMatrix.length;
 	for (let i = 0; i < covarianceMatrix.length; i++) {
+		// get max value excluding diagonal
+		let maxValue = 0;
 		for (let j = 0; j < covarianceMatrix[i].length; j++) {
-			if (i != j) {
-				distanceWeights[i] += Math.abs(covarianceMatrix[i][j]);
+			let value = Math.abs(covarianceMatrix[i][j]);
+			if (i != j && value > maxValue) {
+				distanceWeights[i] = value; 
+				maxValue = value;
 			}
 		}	
-		distanceWeights[i] =  distanceWeights[i] / (numberOfCoordinates - 1);
 		distanceWeights[i] =  1/numberOfCoordinates + (1-distanceWeights[i])*(numberOfCoordinates-1)/numberOfCoordinates;
 	}
 	if (clogDistanceWeights) {
@@ -246,7 +249,7 @@ function sequentialKMeans(centroids, datapoint, covarianceMatrix) {
 	let minDistance = 9999;
 	let distanceWeights = calculateDistanceWeights(covarianceMatrix);
 	// find minimum distance between datapoint and centroids
-	centroids.forEach(function(centroid) {
+	centroids.forEach(function (centroid) {
 		let distance = getEuclideanDistance(centroid.coordinates, datapoint.coordinates, distanceWeights);
 		distances.push(distance);
 		let avgDist = centroid.averageDistance == 0 ? distance / 3 : centroid.averageDistance;
@@ -475,7 +478,7 @@ async function main(videoId, isThumbnail=false) {
 	let centroids = await getCentroids(datapoint);
 	let centroid = sequentialKMeans(centroids, datapoint, coordinatesStats.correlationMatrix);
 	let videoScore = calculateScore(centroid, datapoint);
-	
+
 	if (!isThumbnail) {
 		let liksEl = document.querySelector("ytd-menu-renderer yt-formatted-string[aria-label]");
 		let span = liksEl.querySelector('span');
