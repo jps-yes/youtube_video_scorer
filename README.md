@@ -21,6 +21,6 @@
     * The score is the percentile of likes-to-view ratio of the video relative to the other videos in the cluster.
     * A transformation of the percentile to make the score more intuitive.
 
-**How it used new video data:**
+**How it uses new video data:**
 * Centroids for clustering and statistics are predeployed.
 * New video data is used to update the centroids and statistics locally on the browser. No data is sent outside the browser. 
