@@ -62,9 +62,15 @@ async function getCoordinatesStats(datapoint) {
 }
 // #endregion
 
-function clog(message) {
+function clog(/* arguments */) {
 	let prefix = "[Youtube-Video-Stats] ";
-	console.log(prefix, message);
+	let args = Array.prototype.slice.call(arguments);
+	if (typeof args[0] == "string") {
+		args[0] = prefix + args[0];
+	} else {
+		args.unshift(prefix);
+	}
+	console.log.apply(console, args);
 }
 
 async function getVideoInfo(videoId) {
@@ -74,7 +80,7 @@ async function getVideoInfo(videoId) {
 	let commentCount = data.items[0].statistics.commentCount;
 	let viewCount = data.items[0].statistics.viewCount ? data.items[0].statistics.viewCount : -100;
 	let likeCount = data.items[0].statistics.likeCount;
-	let publishedAt = data.items[0].snippet.publishedAt;
+	let publishedAt = data.items[0].snippet.publishedAt 
 	let duration = data.items[0].contentDetails.duration;
 	let channelId = data.items[0].snippet.channelId;
 	let channelUrl = `https://www.googleapis.com/youtube/v3/channels?id=${channelId}&key=${API_KEY}&part=statistics`;
