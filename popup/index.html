@@ -9,11 +9,12 @@
         }
         body {
             background-color: var(--ydark); 
+            font-family: 'Roboto', Arial, sans-serif;
             width: 300px;
-            font-family: 'Roboto', sans-serif;
         }
         h1, h2, h3, h4, h5, h6 {
             color: var(--ywhite);
+            text-align: center;
         }
         input {
             background: var(--ydark);
@@ -22,24 +23,44 @@
             border-top: 0px;
             border-left: 0px;
             border-right: 0px;
+            width: 100%;
+            text-align: center;
+            
         }
         ::placeholder {
             color: var(--ywhite);
+        }
+        .buttonDiv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .newSection {
+            margin-top: 15px;
+        }
+        button {
+            color: var(--ywhite);
+            background: var(--yred);
+            border-color: var(--ywhite);
+            border-width: 1px;
+            width: 100px;
+            border-radius: 10px; 
+            height: 30px;
+            font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <h1>YouTube Video Scorer</h1>
-    <div class="row">           
-        <input placeholder="Insert API key" id="api_input"/>                   
+    <input placeholder="Insert API key" id="api_input"/>                   
+    <div class="buttonDiv">
         <button id="api_submit" type="button">Submit</button>
-    <div>      
-    <h2>Thumbnail Scores</h2>
-    <div class="row">
-        <button id="GetScoresButton" class="btn btn-primary">Get Thumbnail Scores</button>
     </div>
-    <div class="row">
-        <div id="thumbnail-scores"></div>
+    <h2>Get Scores on thumbnails:</h2>
+    <div class="buttonDiv">
+        <button id="GetScoresButton" class="btn btn-primary">Click</button>
     </div>
 </body>
 
