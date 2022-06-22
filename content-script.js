@@ -352,7 +352,7 @@ function calculateScore(centroid, datapoint) {
 	let variance = centroid.varianceLikesToViewsRatio == 0 ? Math.abs(centroid.averageLikesToViewsRatio) : centroid.varianceLikesToViewsRatio;
 	let sigma = Math.sqrt(variance);
 	let value = (datapoint.averageLikesToViewsRatio * datapoint.averageViews + centroid.averageLikesToViewsRatio * centroid.averageViews) / (datapoint.averageViews + centroid.averageViews);
-	let adjSigma = sigma * datapoint.averageViews / (datapoint.averageViews + centroid.averageViews);
+	let adjSigma = sigma * Math.pow(datapoint.averageViews / (datapoint.averageViews + centroid.averageViews), 1/2);
 	let percentile = (1 + erf((value - mu) / (adjSigma * Math.sqrt(2)))) / 2;
 	let dislike = 1 - percentile;
 	let dislikeVar = Math.abs(dislike - 0.5);

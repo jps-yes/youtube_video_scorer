@@ -14,13 +14,13 @@
 
 **It works the following way:**
 1. Gets video statistics using the YouTube API.
-2. Clusters video into groups based on 13 parameters. 
+2. Clusters video into groups based on video caracteristics. 
     * Clustering is done using [K-means](https://en.wikipedia.org/wiki/K-means_clustering).
-    * Paremeters are combinations and transformations of views, video age, video length, number of comments, number of channel subscribers.
+    * Paremeters used are combinations and transformations of views, video age, video length, number of comments, number of channel subscribers.
 3. Scores the video relative to the other videos in the cluster.
     * The score is the percentile of likes-to-view ratio of the video relative to the other videos in the cluster.
     * A transformation of the percentile to make the score more intuitive.
 
 **How it uses new video data:**
 * Centroids for clustering and statistics are predeployed.
-* New video data is used to update the centroids and statistics locally on the browser. No data is sent outside the browser. 
+* New video data is used to update the centroids and statistics locally on the browser. No data is sent outside the browser.
