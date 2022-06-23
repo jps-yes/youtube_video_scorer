@@ -363,7 +363,9 @@ function calculateScore(centroid, datapoint) {
 	let normDislike = normDislikeVar * std + avg;
 	let newDislike = Math.pow(10, normDislike);
 	let score = 1 - newDislike;	
+	score = score /0.996;
 	score = score < 0 ? 0 : score;
+	score = score > 1 ? 1 : score;
 	return score
 }
 
@@ -429,11 +431,8 @@ function updateAndSaveCoordinateStats(coordinatesStats, datapoint, normalizedCoo
 	return coordinatesStats;
 }
 
-async function main(videoId, isThumbnail=false) {
-	let videoData = await getVideoInfo(videoId);
-	if (videoData.likeCount == undefined || videoData == null) {
-		return null;
-	}
+// initialize datapoint
+async function initializeDatapoint(videoData) {
 	let videoDataLog = {
 		"commentCount": (videoData.commentCount == undefined || isNaN(videoData.commentCount) || videoData.commentCount <= 1) ? -100 : Math.log(videoData.commentCount),
 		"viewCount": (videoData.viewCount == undefined || isNaN(videoData.viewCount) || videoData.viewCount <= 1) ? -100 : Math.log(videoData.viewCount),
@@ -471,6 +470,16 @@ async function main(videoId, isThumbnail=false) {
 		"meanSquaredDifferenceDistance": 0,
 		"meanSquaredDifferenceLikesToViewsRatio": 0
 	};
+	return datapoint;
+}
+	
+
+async function main(videoId, isThumbnail=false) {
+	let videoData = await getVideoInfo(videoId);
+	if (videoData.likeCount == undefined || videoData == null) {
+		return null;
+	}
+	let datapoint = await initializeDatapoint(videoData);
 	let coordinatesStats = await getCoordinatesStats(datapoint);
 	let normalizedCoordinates = normalizeCoordinates(datapoint, coordinatesStats);
 	coordinatesStats = updateAndSaveCoordinateStats(coordinatesStats, datapoint, normalizedCoordinates);	
