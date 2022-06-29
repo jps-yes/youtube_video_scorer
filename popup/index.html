@@ -5,6 +5,7 @@
         :root {
             --ydark: rgb(40, 40, 40);
             --yred: rgb(255, 0, 0);
+            --yredFade: rgb(255, 0, 0, 0.5);
             --ywhite: rgb(255, 255, 255);
         }
         body {
@@ -49,6 +50,9 @@
             height: 30px;
             font-size: 14px;
             font-weight: bold;
+        }
+        button:hover {
+            background: var(--yredFade);
         }
     </style>
 </head>
