@@ -1,7 +1,7 @@
 {
-	"name": "Youtube Video Sentiment",
-	"description": "Displays the sentiment of the video based on the ratio of likes to views. It also takes into account the age of the video and channel subscribers.",
-	"version": "1.0.0",
+	"name": "Youtube Video Scorer",
+	"description": "A chrome extension that scores YouTube videos, based on k-means clustering and likes-to-view ratio.",
+	"version": "0.1",
 	"manifest_version": 3,
 	"icons": {
 		"64": "assets/icon64.png",

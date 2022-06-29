@@ -498,6 +498,7 @@ function getScoreColor(score) {
 function displayScore(score, isThumbnail, thumbnail, isNormalVideo, isShorts, isMobile, videoId) {
 	score = (score * 100).toFixed(1);
 	let color = getScoreColor(score);
+	let isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
 	if (!isThumbnail && !isMobile) {
 		// create score element
 		let scoreElement = document.createElement("div");
@@ -505,7 +506,7 @@ function displayScore(score, isThumbnail, thumbnail, isNormalVideo, isShorts, is
 		scoreElement.style['display'] = "flex";
 		scoreElement.style['align-items'] = "center";
 		scoreElement.style['justify-content'] = "center";
-		scoreElement.style['background-color'] = `rgb(${color[0]*3/4+128/4}, ${color[1]*3/4+128/4}, ${color[2]*3/4+128/4})`;
+		scoreElement.style['background-color'] = `rgb(${color[0]*3/4+255/4*!isDarkMode}, ${color[1]*3/4+255/4*!isDarkMode}, ${color[2]*3/4+255/4*!isDarkMode})`;
 		scoreElement.style['color'] = 'var(--yt-button-icon-button-text-color,var(--yt-spec-text-secondary))';
 		scoreElement.style['border-radius'] = "5px";
 		scoreElement.style['border'] = "2px solid ";
@@ -556,7 +557,12 @@ function displayScore(score, isThumbnail, thumbnail, isNormalVideo, isShorts, is
 		div.style['position'] = 'absolute';
 		div.style['top'] = '0';
 		div.style['left'] = '0';
-		div.style['background-color'] = '#fff';
+		// IF browser is in dark mode, use black background color, else use white background color
+		if (isDarkMode) {
+			div.style['background-color'] = 'rgb(0,0,0)';
+		} else {
+			div.style['background-color'] = 'rgb(255,255,255)';
+		}
 		div.style['font-size'] = '12px';
 		div.style['padding'] = '0.2em 0.4em';
 		div.style['border-radius'] = '0.2em';
