@@ -546,7 +546,9 @@ function displayScore(score, isThumbnail, thumbnail, isNormalVideo, isShorts, is
 		} else if (isNormalVideo) {
 			scoreElement.style['margin'] = '7px 13px 9px 0px';
 			let buttonMenuElement = document.getElementById("top-level-buttons-computed");
-			buttonMenuElement.insertBefore(scoreElement, buttonMenuElement.firstChild);
+			if (buttonMenuElement.querySelector(".scoreElement") == null) {
+				buttonMenuElement.insertBefore(scoreElement, buttonMenuElement.firstChild);
+			}
 		} 
 	}	
 	if (isThumbnail) { 
