@@ -14,8 +14,7 @@
 		"*://*.youtube.com/*"
 	],
 	"permissions": [
-		"storage",
-		"tabs"
+		"storage"
 	],
 	"content_scripts": [
 		{
