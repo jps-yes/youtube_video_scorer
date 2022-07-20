@@ -2,6 +2,8 @@
 
 **A chrome extension that scores YouTube videos. It is a useful metric since dislikes and like-to-dislike ratio were removed from YouTube.**
 
+**[Download it from Chrome Web Store](https://chrome.google.com/webstore/detail/youtube-video-scorer/gnhpjpbjmobcockboghiffjmmnddmbbg)**
+
 ## How to use
 
 1. Install the extension.
